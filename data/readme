@@ -1,0 +1,5 @@
+shops : List of shops, in csv format (id,query)
+weibos/xxx : weibos for shop with id xxx, in csv format (weiboId,#like,#retweet,#comment,#pic,poi,from,time,content (segmented))
+labeled_weibo : labeling results, in csv format (query,weiboId,isreview,reviewratio)
+isreview = (-1,0,1) indicates non-review, not sure, is-review
+reviewratio = (-1,0,1) indicates less than half, about half, more than half of the weibo is review
