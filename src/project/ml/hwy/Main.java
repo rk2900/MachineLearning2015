@@ -48,7 +48,7 @@ public class Main {
 					sb.append(strings[i]);
 				}
 				Data data = new Data(strings[0],Integer.parseInt(strings[1]),Integer.parseInt(strings[2]),Integer.parseInt(strings[3]),Integer.parseInt(strings[4]),strings[5],strings[6],strings[7],sb.toString());
-				map.put(strings[1], data);
+				map.put(strings[0], data);
 			}
 			bufReader.close();
 		}
