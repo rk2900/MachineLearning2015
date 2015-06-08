@@ -45,5 +45,4 @@ Temporary Items
 # bin Directory
 bin/
 bin/*
-bin/project/ml/hwy/Main.class
 *.class
