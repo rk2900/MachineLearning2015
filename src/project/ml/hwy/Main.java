@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class Main {
-	private static final String labelPath = "data\\labeled_weibo",
-			dataDir="data\\weibos\\";
+	private static final String labelPath = "data"+File.separator+"labeled_weibo",
+			dataDir="data"+File.separator+"weibos"+File.separator;
 	private static final String[] modelList = {};
 	private static final int nFold = 5;
 	private static Map<String,Label> getLabel() throws IOException
