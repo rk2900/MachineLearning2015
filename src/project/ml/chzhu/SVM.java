@@ -1,9 +1,10 @@
 package project.ml.chzhu;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import project.ml.hwy.Data;
+import project.ml.hwy.Label;
 import project.ml.hwy.Model;
 import project.ml.hwy.Result;
 
@@ -18,17 +19,14 @@ public class SVM extends Model {
 	@Override
 	protected List<Result> predict(List<Data> dataList) {
 		// TODO Auto-generated method stub
-		LinkedList<Result> results = new LinkedList<Result>();
-		return results;
+		return null;
 	}
 
 	@Override
-	protected void train(List<Data> dataList) {
+	protected void train(Map<Data, Label> trainList) {
 		// TODO Auto-generated method stub
-		System.out.println(dataList.size());
-//		System.out.println(dataList.get(1).getPic());
-//		System.out.println(dataList.get(1).getPoi());
-		System.out.println(dataList.get(0).getContent());
+		
 	}
+
 
 }
