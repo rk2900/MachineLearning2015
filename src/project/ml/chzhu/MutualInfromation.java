@@ -1,8 +1,10 @@
 package project.ml.chzhu;
 
 import java.util.List;
+import java.util.Map;
 
 import project.ml.hwy.Data;
+import project.ml.hwy.Label;
 import project.ml.hwy.Model;
 import project.ml.hwy.Result;
 
@@ -21,7 +23,7 @@ public class MutualInfromation extends Model{
 	}
 
 	@Override
-	protected void train(List<Data> dataList) {
+	protected void train(Map<Data, Label> trainList) {
 		// TODO Auto-generated method stub
 		
 	}

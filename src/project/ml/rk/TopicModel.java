@@ -10,6 +10,7 @@ import java.util.regex.*;
 import java.io.*;
 
 import project.ml.hwy.Data;
+import project.ml.hwy.Label;
 import project.ml.hwy.Model;
 import project.ml.hwy.Result;
 
@@ -29,12 +30,11 @@ public class TopicModel extends Model {
 	}
 
 	@Override
-	protected void train(List<Data> dataList) {
-		// TODO Auto-generated method stub
-//		Data data = dataList.get(0);
-		System.out.println(dataList.size());
-//		System.out.println(data.getContent());
+	protected void train(Map<Data, Label> trainList) {
+		
 	}
+
+	
 	
 //	public static void main(String[] args) throws Exception {
 //
