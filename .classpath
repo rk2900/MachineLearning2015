@@ -3,7 +3,18 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/mallet-2.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/libsvm.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/arpack_combined_all-0.1.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/bsh-2.0b4.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/hamcrest-core-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/jdom-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/jgrapht-0.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/jwnl-1.4_rc3.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/mallet-2.0.7.jar" sourcepath="C:/Users/kren/.m2/repository/cc/mallet/mallet/2.0.7/mallet-2.0.7-sources.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/mtj-0.9.14.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/netlib-java-0.9.3.jar"/>
+	<classpathentry kind="lib" path="lib/mallet/trove4j-2.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
