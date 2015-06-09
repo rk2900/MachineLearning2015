@@ -43,12 +43,4 @@ Temporary Items
 .apdisk
 
 # bin Directory
-bin/
-bin/*
-<<<<<<< HEAD
-bin/project/ml/hwy/Main.class
-*.class
-*.class
-=======
-*.class
->>>>>>> origin/master
+
