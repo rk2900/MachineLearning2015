@@ -1,9 +1,15 @@
 package project.ml.hwy;
 
 public class Data {
-	private String weiboId,poi,from,time,content;
+	private String weiboId,poi,from,time,content,fileName;
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 	public Data(String weiboId, int like, int retweet, int comment, int pic, String poi, String from, String time,
-			String content) {
+			String content, String fileName) {
 		super();
 		this.weiboId = weiboId;
 		this.poi = poi;
@@ -14,6 +20,7 @@ public class Data {
 		this.retweet = retweet;
 		this.comment = comment;
 		this.pic = pic;
+		this.fileName = fileName;
 	}
 	public String getWeiboId() {
 		return weiboId;

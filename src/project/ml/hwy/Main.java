@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 	private static final String labelPath = "data"+File.separator+"labeled_weibo",
@@ -35,43 +37,45 @@ public class Main {
 		File dir = new File(dataDir);
 		File[] files = dir.listFiles();
 		Map<String,Data> map = new HashMap<String,Data>();
+		String pattern = "^([^,]*),(\\d+),(\\d+),(\\d+),(\\d+),\"([^\"]*)\",([^,]*),([^,]*),(.*)$";
+		Pattern r = Pattern.compile(pattern);
 		for(File file : files)
 		{
 			BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
 			String line = new String();
 			while((line = bufReader.readLine())!=null)
 			{
-				String[] strings = line.split(",");
-				StringBuffer sb = new StringBuffer();
-				for(int i=8;i<strings.length;i++)
+				Matcher m = r.matcher(line);
+				if(m.find())
 				{
-					sb.append(strings[i]);
+					Data data = new Data(m.group(1),Integer.parseInt(m.group(2)),Integer.parseInt(m.group(3)),Integer.parseInt(m.group(4)),Integer.parseInt(m.group(5)),m.group(6),m.group(7),m.group(8),m.group(9),file.getName());
+					map.put(data.getWeiboId(), data);
 				}
-				Data data = new Data(strings[0],Integer.parseInt(strings[1]),Integer.parseInt(strings[2]),Integer.parseInt(strings[3]),Integer.parseInt(strings[4]),strings[5],strings[6],strings[7],sb.toString());
-				map.put(strings[0], data);
 			}
 			bufReader.close();
 		}
 		return map;
 	}
-	private static List<Data> getLabeledDataList(Set<String> labelSet,Map<String,Data> dataMap)
+	private static Map<Data,Label> getLabeledDataList(Map<String,Label> labelMap,Map<String,Data> dataMap)
 	{
-		List<Data> dataList = new ArrayList<Data>();
-		for(String id : labelSet)
+		Map<Data,Label> dataList = new HashMap<Data,Label>();
+		for(Entry<String, Label> e : labelMap.entrySet())
 		{
-			dataList.add(dataMap.get(id));
+			dataList.put(dataMap.get(e.getKey()),e.getValue());
 		}
 		return dataList;
 	}
-	private static void dataGenerate(List<Data> sourceList,int i,int nFold,List<Data> trainList,List<Data> testList)
+	private static void dataGenerate(Map<Data,Label> sourceMap,int i,int nFold,Map<Data,Label> trainList,List<Data> testList)
 	{
-		for(int a=0;a<sourceList.size();a++)
+		int a=0;
+		for(Entry<Data,Label> e : sourceMap.entrySet())
 		{
 			if(a%nFold==i)
 			{
-				testList.add(sourceList.get(a));
+				testList.add(e.getKey());
 			}
-			else trainList.add(sourceList.get(a));
+			else trainList.put(e.getKey(), e.getValue());
+			a++;
 		}
 	}
 	private static double[] evaluate(List<Result> results,Map<String,Label> labelMap)
@@ -102,16 +106,16 @@ public class Main {
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		Map<String,Label> labelMap= getLabel();
 		Map<String,Data> dataMap = getData();
-		List<Data> labeledDataList = getLabeledDataList(labelMap.keySet(),dataMap);
+		Map<Data,Label> labeledDataMap = getLabeledDataList(labelMap,dataMap);
 		for(String modelName : modelList)
 		{
 			double precision = 0.0;
 			double recall = 0.0;
 			for(int i=0;i<nFold;i++)
 			{
-				List<Data> trainList = new ArrayList<Data>();
+				Map<Data,Label> trainList = new HashMap<Data,Label>();
 				List<Data> testList = new ArrayList<Data>();
-				dataGenerate(labeledDataList,i,nFold,trainList,testList);
+				dataGenerate(labeledDataMap,i,nFold,trainList,testList);
 				Model model = (Model) Class.forName(modelName).newInstance();
 				List<Result> results = model.run(trainList,testList);
 				double[] scores = evaluate(results,labelMap);
