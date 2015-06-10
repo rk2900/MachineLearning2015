@@ -1,5 +1,6 @@
 package project.ml.rk;
 
+import basic.FileOps;
 import basic.algorithm.Classification;
 import basic.algorithm.WinSVM;
 import basic.format.DenseFeature;
@@ -26,8 +27,10 @@ import project.ml.hwy.Result;
 
 public class TopicModel extends Model {
 	
+	int numTopics = 30;
 	public Pipe pipe;
 	public InstanceList instances;
+	public InstanceList totalInstances;
 	public ParallelTopicModel model;
 	public Classification classificationModel;
 
@@ -73,21 +76,35 @@ public class TopicModel extends Model {
 	protected void init() {
 		pipe = buildPipe();
 		instances= new InstanceList(pipe);
+		totalInstances = new InstanceList(pipe);
 	}
 
 	@Override
 	protected List<Result> predict(List<Data> dataList) {
 		// Create a new instance named "ABFJ33" with empty target and source fields.
-		StringBuilder topicText = new StringBuilder("我 在 实验室 吃 火锅 。");
-		InstanceList testing = new InstanceList(instances.getPipe());
-		testing.addThruPipe(new Instance(topicText.toString(), -1, "ABFJ33", null));
-		
+		LinkedList<Result> results =  new LinkedList<Result>();
 		TopicInferencer inferencer = model.getInferencer();
-		double[] testProbabilities = inferencer.getSampledDistribution(testing.get(0), 10, 1, 5);
-		System.out.println("0\t" + testProbabilities[0]);
+		InstanceList test = new InstanceList(pipe);
+		for(int i=0; i<dataList.size(); i++) {
+			Data data = dataList.get(i);
+			Instance inst = new Instance(data.getContent(), 1, data.getWeiboId(), null);
+			test.addThruPipe(inst);
+			double[] topicProbabilities = inferencer.getSampledDistribution(test.get(i), 10, 1, 5);
+			Feature f = new DenseFeature();
+			f.setSize(numTopics);
+			f.setResult(0);
+			int count=0;
+			for (double d : topicProbabilities) {
+				f.setValue(count++, d);
+			}
+			Result result = new Result(data.getWeiboId(), "TopicModel", (int)classificationModel.predict(f), 0);
+			results.add(result);
+		}
 		
-		ArrayList<Result> result =  new ArrayList<Result>();
-		return result;
+		for (Result result : results) {
+			System.out.print(result.getType()+"\t");
+		}
+		return results;
 	}
 
 	@Override
@@ -102,13 +119,21 @@ public class TopicModel extends Model {
 			labels.add(label);
 			Instance instance = new Instance(data.getContent(), label.getIsreview(), data.getWeiboId(), null);
 			instances.addThruPipe(instance);
+			totalInstances.add(instance);
 		}
 		
-		int numTopics = 100;
+		LinkedList<String> lines = FileOps.LoadFilebyLine("data/weibo_timeline.txt");
+		for (String string : lines) {
+			String content = string.substring(17, string.length());
+			String weiboId = string.substring(0, 17);
+			Instance instance = new Instance(content, 1, weiboId, null);
+			totalInstances.addThruPipe(instance);
+		}
+		
 		model = new ParallelTopicModel(numTopics, 1.0, 0.01);
 		
-		model.addInstances(instances);
-		model.setNumThreads(2);
+		model.addInstances(totalInstances);
+		model.setNumThreads(16);
 		
 		model.setNumIterations(1500);
 		try {
@@ -117,14 +142,14 @@ public class TopicModel extends Model {
 			e.printStackTrace();
 		}
 		
+		printTopic();
+		Scanner scanner = new Scanner(System.in);
+		scanner.next();
 		String cmd = "-t 3 -h 0 -b 1";
 		classificationModel = new WinSVM("lib/winsvm/", cmd, "-b 1");
 		classificationModel.setNFeature(numTopics);
 		
 		for(int i=0; i<instances.size(); i++ ) {
-			System.out.println("Instance "+i);
-			Instance inst = instances.get(i);
-			System.out.println(inst.getLabeling().getBestValue());
 			double[] topicDistribution = model.getTopicProbabilities(i);
 			
 			Feature f = new DenseFeature();
@@ -138,6 +163,25 @@ public class TopicModel extends Model {
 		}
 		
 		classificationModel.train();
-		
+	}
+	
+	public void printTopic() {
+		Alphabet dataAlphabet = instances.getDataAlphabet();
+		Formatter out = new Formatter(new StringBuilder(), Locale.US);
+		double[] topicDistribution = model.getTopicProbabilities(0);
+		ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+		for (int topic = 0; topic < numTopics; topic++) {
+			Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
+			
+			out = new Formatter(new StringBuilder(), Locale.US);
+			out.format("%d\t%.3f\t", topic, topicDistribution[topic]);
+			int rank = 0;
+			while (iterator.hasNext() && rank < 50) {
+				IDSorter idCountPair = iterator.next();
+				out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+				rank++;
+			}
+			System.out.println(out);
+		}
 	}
 }
