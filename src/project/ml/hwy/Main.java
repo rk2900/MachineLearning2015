@@ -12,12 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import project.ml.rk.*;
 
 public class Main {
 	private static final String labelPath = "data"+File.separator+"labeled_weibo",
 			dataDir="data"+File.separator+"weibos"+File.separator;
-	private static final String[] modelList = {};
-	private static final int nFold = 5;
+	private static final String[] modelList = {"project.ml.rk.Baseline"};//, "project.ml.rk.DecisionTree"};
+	private static final int nFold = 2;
 	private static Map<String,Label> getLabel() throws IOException
 	{
 		BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(labelPath)),"UTF-8"));

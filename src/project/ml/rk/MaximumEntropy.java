@@ -6,12 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import cc.mallet.classify.Classification;
-import cc.mallet.classify.Classifier;
-import cc.mallet.classify.ClassifierTrainer;
-import cc.mallet.classify.DecisionTreeTrainer;
+import javax.management.InstanceAlreadyExistsException;
+
 import cc.mallet.pipe.CharSequence2TokenSequence;
-import cc.mallet.pipe.FeatureSequence2FeatureVector;
 import cc.mallet.pipe.Input2CharSequence;
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
@@ -19,23 +16,19 @@ import cc.mallet.pipe.Target2Label;
 import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.pipe.TokenSequenceLowercase;
 import cc.mallet.pipe.TokenSequenceRemoveStopwords;
-import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
-import cc.mallet.types.Labeling;
 import project.ml.hwy.Data;
 import project.ml.hwy.Label;
 import project.ml.hwy.Model;
 import project.ml.hwy.Result;
 
-public class DecisionTree extends Model {
+public class MaximumEntropy extends Model {
+	
+	Pipe pipe;
+	InstanceList instances;
 
-	public Pipe pipe;
-	public InstanceList instances;
-	public ClassifierTrainer decisionTree;
-	public Classifier classifier;
-
-    public Pipe buildPipe() {
+	public Pipe buildPipe() {
         ArrayList pipeList = new ArrayList();
 
         // Read data from File objects
@@ -65,8 +58,6 @@ public class DecisionTree extends Model {
         //  them to integers by looking them up in an alphabet.
         pipeList.add(new TokenSequence2FeatureSequence());
 
-        pipeList.add(new FeatureSequence2FeatureVector());// Collapse word order into a "feature vector"
-        
         // Do the same thing for the "target" field: 
         //  convert a class label string to a Label object,
         //  which has an index in a Label alphabet.
@@ -78,29 +69,12 @@ public class DecisionTree extends Model {
 	@Override
 	protected void init() {
 		pipe = buildPipe();
-		instances= new InstanceList(pipe);
+		instances = new InstanceList(pipe);
 	}
 
 	@Override
 	protected List<Result> predict(List<Data> dataList) {
 		ArrayList<Result> results = new ArrayList<Result>();
-		InstanceList testList = new InstanceList(pipe);
-		for (Data data : dataList) {
-			Instance inst = new Instance(data.getContent(), -5, data.getWeiboId(), null);
-			testList.addThruPipe(inst);
-		}
-		System.out.println("Weibo ID\tBest Label");
-		ArrayList<Classification> classifications = classifier.classify(testList);
-		for (Classification classification : classifications) {
-//			System.out.println("CorrectLabel: "+classification.valueOfCorrectLabel());
-//			System.out.println("Labeling: "+classification.getLabeling());
-//			System.out.println("Label vector: "+classification.getLabelVector());
-			Labeling labeling = classification.getLabeling();
-			System.out.println(classification.getInstance().getName()+"\t"+labeling.getBestLabel());
-			Result result = new Result(classification.getInstance().getName().toString(), "Desition Tree", Integer.parseInt(labeling.getBestLabel().toString()), 0.0);
-			results.add(result);
-		}
-		
 		return results;
 	}
 
@@ -109,20 +83,8 @@ public class DecisionTree extends Model {
 		Set<Data> dataSet = trainList.keySet();
 		for (Data data : dataSet) {
 			Label label = trainList.get(data);
-			System.out.println(data.getWeiboId()+"\t"+label.getIsreview()+"\t"+data.getContent());
 			Instance instance = new Instance(data.getContent(), label.getIsreview(), data.getWeiboId(), null);
-			instances.addThruPipe(instance);
 		}
-		InstanceList[] splitList = instances.split(new double[] {0.7, 0.3});
-		
-		decisionTree = new DecisionTreeTrainer();
-		classifier = decisionTree.train(splitList[0]);
-		
-		System.out.println ("The training accuracy is "+ classifier.getAccuracy (splitList[0]));
-		System.out.println ("The testing accuracy is "+ classifier.getAccuracy (splitList[1]));
-		
 	}
-
-	
 
 }

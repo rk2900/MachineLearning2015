@@ -63,13 +63,21 @@ public class TopicModel extends Model {
 	
 	@Override
 	protected void init() {
-		new TokenSequence2FeatureSequence();
 		pipe = buildPipe();
 		instances= new InstanceList(pipe);
 	}
 
 	@Override
 	protected List<Result> predict(List<Data> dataList) {
+		// Create a new instance named "ABFJ33" with empty target and source fields.
+		StringBuilder topicText = new StringBuilder("我 在 实验室 吃 火锅 。");
+		InstanceList testing = new InstanceList(instances.getPipe());
+		testing.addThruPipe(new Instance(topicText.toString(), -1, "ABFJ33", null));
+		
+		TopicInferencer inferencer = model.getInferencer();
+		double[] testProbabilities = inferencer.getSampledDistribution(testing.get(0), 10, 1, 5);
+		System.out.println("0\t" + testProbabilities[0]);
+		
 		ArrayList<Result> result =  new ArrayList<Result>();
 		return result;
 	}
@@ -97,41 +105,47 @@ public class TopicModel extends Model {
 		}
 		
 		// Topic distribution of the first instance
-		System.out.println("Topic distribution of the first instance");
-		Alphabet dataAlphabet = instances.getDataAlphabet();
-		FeatureSequence tokens = (FeatureSequence) model.getData().get(0).instance.getData();
-		LabelSequence topics = model.getData().get(0).topicSequence;
+//		System.out.println("Topic distribution of the first instance");
+//		Alphabet dataAlphabet = instances.getDataAlphabet();
+//		FeatureSequence tokens = (FeatureSequence) model.getData().get(0).instance.getData();
+//		LabelSequence topics = model.getData().get(0).topicSequence;
+//		
+//		Formatter out = new Formatter(new StringBuilder(), Locale.CHINA);
+//		for (int position=0; position < tokens.getLength(); position++) {
+//			out.format("%s-%d ", dataAlphabet.lookupObject(tokens.getIndexAtPosition(position)), topics.getIndexAtPosition(position));
+//		}
+//		System.out.println(out);
 		
-		Formatter out = new Formatter(new StringBuilder(), Locale.CHINA);
-		for (int position=0; position < tokens.getLength(); position++) {
-			out.format("%s-%d ", dataAlphabet.lookupObject(tokens.getIndexAtPosition(position)), topics.getIndexAtPosition(position));
-		}
-		System.out.println(out);
-		
-		double[] topicDistribution = model.getTopicProbabilities(0);
-		ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
-		
-		for (int topic=0; topic < numTopics; topic++) {
-			Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
-			out = new Formatter(new StringBuilder(), Locale.CHINA);
-			out.format("%d\t%.3f\t", topic, topicDistribution[topic]);
-			int rank = 0;
-			while(iterator.hasNext() && rank < 5) {
-				IDSorter idCountPair = iterator.next();
-				out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
-				rank++;
+		for(int i=0; i<instances.size(); i++ ) {
+			double[] topicDistribution = model.getTopicProbabilities(i);
+			int topicCount = 0;
+			for (double d : topicDistribution) {
+				System.out.print(topicCount+": "+d+"\t");
+				topicCount++;
 			}
-			System.out.println(out);
 		}
 		
-		// Create a new instance named "ABFJ33" with empty target and source fields.
-		System.out.println("Test Example");
-		StringBuilder topicText = new StringBuilder("我 在 实验室 吃 火锅 。");
-		InstanceList testing = new InstanceList(instances.getPipe());
-		testing.addThruPipe(new Instance(topicText.toString(), -1, "ABFJ33", null));
+//		System.out.println("==============");
+//		double[] topicDistribution = model.getTopicProbabilities(0);
+//		ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+//		
+//		for (int topic=0; topic < numTopics; topic++) {
+//			Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
+//			out = new Formatter(new StringBuilder(), Locale.CHINA);
+//			out.format("%d\t%.3f\t", topic, topicDistribution[topic]);
+//			int rank = 0;
+//			while(iterator.hasNext() && rank < 5) {
+//				IDSorter idCountPair = iterator.next();
+//				out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
+//				rank++;
+//			}
+//			System.out.println(out);
+//		}
 		
-		TopicInferencer inferencer = model.getInferencer();
-		double[] testProbabilities = inferencer.getSampledDistribution(testing.get(0), 10, 1, 5);
-		System.out.println("0\t" + testProbabilities[0]);
+		
+		
+		
+		
+		
 	}
 }
