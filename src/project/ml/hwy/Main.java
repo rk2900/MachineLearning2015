@@ -134,7 +134,7 @@ public class Main {
 		}
 		for(int i=0;i<modelList.length;i++)
 		{
-			System.out.format("Name:%s Precesion:%.2f Recall:%.2f\n", modelList[i],scores[i][0],scores[i][1]);
+			System.out.format("Name:%s Precesion:%.2f Recall:%.2f F1:%.2f\n", modelList[i],scores[i][0],scores[i][1],2*(scores[i][0]*scores[i][1])/(scores[i][0]+scores[i][1]));
 		}
 
 	}
