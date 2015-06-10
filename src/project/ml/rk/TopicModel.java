@@ -58,7 +58,10 @@ public class TopicModel extends Model {
 
         // Remove stopwords from a standard English stoplist.
         //  options: [case sensitive] [mark deletions]
-        pipeList.add(new TokenSequenceRemoveStopwords(false, false));
+        
+        String stopwordsList = "data/stopwords-utf8.txt";
+//        pipeList.add(new TokenSequenceRemoveStopwords(false, false));
+        pipeList.add( new TokenSequenceRemoveStopwords(new File(stopwordsList), "UTF-8", false, false, false) );
 
         // Rather than storing tokens as strings, convert 
         //  them to integers by looking them up in an alphabet.
@@ -143,8 +146,8 @@ public class TopicModel extends Model {
 		}
 		
 		printTopic();
-		Scanner scanner = new Scanner(System.in);
-		scanner.next();
+//		Scanner scanner = new Scanner(System.in);
+//		scanner.next();
 		String cmd = "-t 3 -h 0 -b 1";
 		classificationModel = new WinSVM("lib/winsvm/", cmd, "-b 1");
 		classificationModel.setNFeature(numTopics);
