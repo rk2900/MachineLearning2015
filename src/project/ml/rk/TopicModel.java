@@ -1,5 +1,7 @@
 package project.ml.rk;
 
+import basic.algorithm.Classification;
+import basic.algorithm.WinSVM;
 import cc.mallet.types.*;
 import cc.mallet.pipe.*;
 import cc.mallet.pipe.iterator.*;
@@ -8,6 +10,9 @@ import cc.mallet.topics.*;
 import java.util.*;
 import java.util.regex.*;
 import java.io.*;
+
+import libsvm.svm_node;
+import libsvm.svm_problem;
 
 import org.netlib.util.doubleW;
 import org.netlib.util.intW;
@@ -22,6 +27,7 @@ public class TopicModel extends Model {
 	public Pipe pipe;
 	public InstanceList instances;
 	public ParallelTopicModel model;
+	public Classification classificationModel;
 
     public Pipe buildPipe() {
         ArrayList pipeList = new ArrayList();
@@ -104,48 +110,15 @@ public class TopicModel extends Model {
 			e.printStackTrace();
 		}
 		
-		// Topic distribution of the first instance
-//		System.out.println("Topic distribution of the first instance");
-//		Alphabet dataAlphabet = instances.getDataAlphabet();
-//		FeatureSequence tokens = (FeatureSequence) model.getData().get(0).instance.getData();
-//		LabelSequence topics = model.getData().get(0).topicSequence;
-//		
-//		Formatter out = new Formatter(new StringBuilder(), Locale.CHINA);
-//		for (int position=0; position < tokens.getLength(); position++) {
-//			out.format("%s-%d ", dataAlphabet.lookupObject(tokens.getIndexAtPosition(position)), topics.getIndexAtPosition(position));
-//		}
-//		System.out.println(out);
+		String cmd = "-t 3 -h 0 -b 1";
+		classificationModel = new WinSVM("lib/winsvm/", cmd, "-b 1");
 		
 		for(int i=0; i<instances.size(); i++ ) {
+			System.out.println("Instance "+i);
+			Instance inst = instances.get(i);
+			System.out.println(inst.getLabeling().getBestValue());
 			double[] topicDistribution = model.getTopicProbabilities(i);
-			int topicCount = 0;
-			for (double d : topicDistribution) {
-				System.out.print(topicCount+": "+d+"\t");
-				topicCount++;
-			}
+			
 		}
-		
-//		System.out.println("==============");
-//		double[] topicDistribution = model.getTopicProbabilities(0);
-//		ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
-//		
-//		for (int topic=0; topic < numTopics; topic++) {
-//			Iterator<IDSorter> iterator = topicSortedWords.get(topic).iterator();
-//			out = new Formatter(new StringBuilder(), Locale.CHINA);
-//			out.format("%d\t%.3f\t", topic, topicDistribution[topic]);
-//			int rank = 0;
-//			while(iterator.hasNext() && rank < 5) {
-//				IDSorter idCountPair = iterator.next();
-//				out.format("%s (%.0f) ", dataAlphabet.lookupObject(idCountPair.getID()), idCountPair.getWeight());
-//				rank++;
-//			}
-//			System.out.println(out);
-//		}
-		
-		
-		
-		
-		
-		
 	}
 }

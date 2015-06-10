@@ -16,7 +16,7 @@ public class Baseline extends Model {
 	protected List<Result> predict(List<Data> dataList) {
 		ArrayList<Result> results = new ArrayList<Result>();
 		for (Data data : dataList) {
-			Result result = new Result(data.getWeiboId(), "Baseline", -1, 0.0);
+			Result result = new Result(data.getWeiboId(), "Baseline", 1, 0.0);
 			results.add(result);
 		}
 		return results;
