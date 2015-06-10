@@ -1,5 +1,6 @@
 package project.ml.chzhu;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,8 @@ public class SVM extends Model {
 	@Override
 	protected List<Result> predict(List<Data> dataList) {
 		// TODO Auto-generated method stub
-		return null;
+		LinkedList<Result> results = new LinkedList<Result>();
+		return results;
 	}
 
 	@Override
