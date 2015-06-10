@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import project.ml.rk.*;
 
 public class Main {
 	private static final String labelPath = "data"+File.separator+"labeled_weibo",
@@ -108,8 +107,11 @@ public class Main {
 		Map<String,Label> labelMap= getLabel();
 		Map<String,Data> dataMap = getData();
 		Map<Data,Label> labeledDataMap = getLabeledDataList(labelMap,dataMap);
-		for(String modelName : modelList)
+		double[][] scores = new double[modelList.length][2];
+		for(int a=0;a<modelList.length;a++)
 		{
+			String modelName = modelList[a];
+			System.out.format("=========%s begins=========\n",modelName);
 			double precision = 0.0;
 			double recall = 0.0;
 			for(int i=0;i<nFold;i++)
@@ -119,13 +121,20 @@ public class Main {
 				dataGenerate(labeledDataMap,i,nFold,trainList,testList);
 				Model model = (Model) Class.forName(modelName).newInstance();
 				List<Result> results = model.run(trainList,testList);
-				double[] scores = evaluate(results,labelMap);
-				precision += scores[0];
-				recall += scores[1];
+				double[] eScores = evaluate(results,labelMap);
+				precision += eScores[0];
+				recall += eScores[1];
 			}
 			precision/=nFold;
 			recall/=nFold;
-			System.out.format("Name:%s Precesion:%.2f Recall:%.2f", modelName,precision,recall);
+			
+			scores[a][0]=precision;
+			scores[a][1]=recall;
+			System.out.format("=========%s ends=========\n",modelName);
+		}
+		for(int i=0;i<modelList.length;i++)
+		{
+			System.out.format("Name:%s Precesion:%.2f Recall:%.2f\n", modelList[i],scores[i][0],scores[i][1]);
 		}
 
 	}
