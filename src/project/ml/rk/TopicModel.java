@@ -2,6 +2,8 @@ package project.ml.rk;
 
 import basic.algorithm.Classification;
 import basic.algorithm.WinSVM;
+import basic.format.DenseFeature;
+import basic.format.Feature;
 import cc.mallet.types.*;
 import cc.mallet.pipe.*;
 import cc.mallet.pipe.iterator.*;
@@ -91,8 +93,13 @@ public class TopicModel extends Model {
 	@Override
 	protected void train(Map<Data, Label> trainList) {
 		Set<Data> dataSet = trainList.keySet();
+		LinkedList<Data> datas = new LinkedList<Data>();
+		LinkedList<Label> labels = new LinkedList<Label>();
+		
 		for (Data data : dataSet) {
 			Label label = trainList.get(data);
+			datas.add(data);
+			labels.add(label);
 			Instance instance = new Instance(data.getContent(), label.getIsreview(), data.getWeiboId(), null);
 			instances.addThruPipe(instance);
 		}
@@ -112,6 +119,7 @@ public class TopicModel extends Model {
 		
 		String cmd = "-t 3 -h 0 -b 1";
 		classificationModel = new WinSVM("lib/winsvm/", cmd, "-b 1");
+		classificationModel.setNFeature(numTopics);
 		
 		for(int i=0; i<instances.size(); i++ ) {
 			System.out.println("Instance "+i);
@@ -119,6 +127,17 @@ public class TopicModel extends Model {
 			System.out.println(inst.getLabeling().getBestValue());
 			double[] topicDistribution = model.getTopicProbabilities(i);
 			
+			Feature f = new DenseFeature();
+			f.setSize(numTopics);
+			f.setResult(labels.get(i).getIsreview()); // 1, -1, 0
+			int count = 0;
+			for (double d : topicDistribution) {
+				f.setValue(count++, d);
+			}
+			classificationModel.addTrain(f);
 		}
+		
+		classificationModel.train();
+		
 	}
 }
