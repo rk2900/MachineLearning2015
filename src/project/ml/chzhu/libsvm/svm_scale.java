@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.*;
 import java.text.DecimalFormat;
 
-class svm_scale
+public class svm_scale
 {
 	private String line = null;
 	private double lower = -1.0;
