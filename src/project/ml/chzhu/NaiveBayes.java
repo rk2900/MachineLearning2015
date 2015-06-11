@@ -129,9 +129,10 @@ public class NaiveBayes extends Model{
 		});
 		
 		try {
+			int startN = 21;
 			int topN = 2500;
-			BufferedWriter fout50 = new BufferedWriter(new FileWriter("./data/NaiveBayes/top"+topN));
-			for(int i=0; i<topN && i<list.size(); ++i){
+			BufferedWriter fout50 = new BufferedWriter(new FileWriter("./data/NaiveBayes/start"+startN));
+			for(int i=startN; i<topN && i<list.size(); ++i){
 				fout50.write(list.get(i).getKey()+"\t"+list.get(i).getValue());
 				fout50.write("\n");
 				
