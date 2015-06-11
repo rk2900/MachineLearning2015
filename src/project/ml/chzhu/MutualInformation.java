@@ -40,12 +40,13 @@ public class MutualInformation extends Model{
 	String resultPath;
 	
 	int featureCount;
-	
+	int [] maxFeature;
 	@Override
 	protected void init() {
 		// TODO Auto-generated method stub
 		int n = 3;
 		featureCount = 2000;
+		maxFeature = new int[3];
 		num = new int [n];
 		mapList = new ArrayList<HashMap<String,Integer>>();
 		MIList = new ArrayList<HashMap<String,Double>>();
@@ -86,12 +87,30 @@ public class MutualInformation extends Model{
 				}
 				
 				sb.append("1");
+				sb.append(" 1:");
+				sb.append((double)data.getComment()/maxFeature[0]);
+				sb.append(" 2:");
+				sb.append((double)data.getLike()/maxFeature[1]);
+				sb.append(" 3:");
+				sb.append((double)data.getRetweet()/maxFeature[2]);
+				sb.append(" 4:");
+				if(data.getPoi().length() > 0){
+					sb.append(1);
+				}else{
+					sb.append(0);
+				}
+				sb.append(" 5:");
+				if(data.getFrom().length() > 0){
+					sb.append(1);
+				}else{
+					sb.append(0);
+				}
 				for (int k=0; k<indexList.size(); ++k) {
 					if(!wordSet.contains(indexList.get(k))){
 						continue;
 					}
 					sb.append(" ");
-					sb.append(k+1);
+					sb.append(k+6);
 					sb.append(":");
 					sb.append(MIMap.get(indexList.get(k)));
 				}
@@ -241,6 +260,20 @@ public class MutualInformation extends Model{
 		 * count the num needed to calculate MI
 		 */
 		for (Data data : trainList.keySet()) {
+			
+			/*
+			 * find the max value of comment & like & retweet
+			 */
+			if(data.getComment() > maxFeature[0]){
+				maxFeature[0] = data.getComment();
+			}
+			if(data.getLike() > maxFeature[1]){
+				maxFeature[1] = data.getLike();
+			}
+			if(data.getRetweet() > maxFeature[2]){
+				maxFeature[2] = data.getRetweet();
+			}
+			
 			Label label = trainList.get(data);
 			int type = label.getIsreview() + 1;
 			
@@ -280,11 +313,7 @@ public class MutualInformation extends Model{
 			}
 		}
 		
-//		int index = 1;
 		for (String word : wordMap.keySet()) {
-//			indexMap.put(word, index);
-//			++index;
-//			MIMap.put(word, calculateMI(word));	
 			calculateMI(word);
 		}
 		sort();
@@ -313,12 +342,49 @@ public class MutualInformation extends Model{
 					wordSet.add(word);
 				}
 				
+//				sb.append(" 1:");
+//				if(data.getComment() > 0){
+//					sb.append(1);
+//				}else{
+//					sb.append(0);
+//				}
+//				sb.append(" 2:");
+//				if(data.getLike() > 0){
+//					sb.append(1);
+//				}else{
+//					sb.append(0);
+//				}
+//				sb.append(" 3:");
+//				if(data.getRetweet() > 0){
+//					sb.append(1);
+//				}else{
+//					sb.append(0);
+//				}
+				sb.append(" 1:");
+				sb.append((double)data.getComment()/maxFeature[0]);
+				sb.append(" 2:");
+				sb.append((double)data.getLike()/maxFeature[1]);
+				sb.append(" 3:");
+				sb.append((double)data.getRetweet()/maxFeature[2]);
+				sb.append(" 4:");
+				if(data.getPoi().length() > 0){
+					sb.append(1);
+				}else{
+					sb.append(0);
+				}
+				sb.append(" 5:");
+				if(data.getFrom().length() > 0){
+					sb.append(1);
+				}else{
+					sb.append(0);
+				}
+				
 				for (int k=0; k<indexList.size(); ++k) {
 					if(!wordSet.contains(indexList.get(k))){
 						continue;
 					}
 					sb.append(" ");
-					sb.append(k+1);
+					sb.append(k+6);
 					sb.append(":");
 					sb.append(MIMap.get(indexList.get(k)));
 				}
@@ -352,7 +418,7 @@ public class MutualInformation extends Model{
 //			e.printStackTrace();
 //		}
 		
-		String [] argvTrain = {"-t","2","-h","0","-b","1",trainPath, modelPath};
+		String [] argvTrain = {"-t","0","-h","0","-b","1",trainPath, modelPath};
 		try {
 			svm_train.main(argvTrain);
 		} catch (IOException e) {
