@@ -45,3 +45,4 @@ Temporary Items
 # bin Directory
 bin/
 svm.*
+config.properties

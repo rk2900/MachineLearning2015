@@ -10,14 +10,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
 	private static final String labelPath = "data"+File.separator+"labeled_weibo",
 			dataDir="data"+File.separator+"weibos"+File.separator;
-	private static final String[] modelList = {"project.ml.rk.Baseline"};//, "project.ml.rk.DecisionTree"};
-	private static final int nFold = 2;
+	private static final String[] modelList = Configuration.read("modelList","").split(";");//, "project.ml.rk.DecisionTree"};
+	private static final int nFold = Integer.valueOf(Configuration.read("nFold","5"));
 	private static Map<String,Label> getLabel() throws IOException
 	{
 		BufferedReader bufReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(labelPath)),"UTF-8"));
@@ -67,10 +68,21 @@ public class Main {
 	}
 	private static void dataGenerate(Map<Data,Label> sourceMap,int i,int nFold,Map<Data,Label> trainList,List<Data> testList)
 	{
+		double threshold = 0.2;
 		int a=0;
 		for(Entry<Data,Label> e : sourceMap.entrySet())
 		{
-			if(a%nFold==i)
+			if(nFold==1)
+			{
+				Random r = new Random();
+				double f = r.nextDouble();
+				if(f<=threshold)
+				{
+					testList.add(e.getKey());
+				}
+				else trainList.put(e.getKey(),e.getValue());
+			}
+			else if(a%nFold==i)
 			{
 				testList.add(e.getKey());
 			}
