@@ -59,8 +59,8 @@ public class TopicModel extends Model {
         // Remove stopwords from a standard English stoplist.
         //  options: [case sensitive] [mark deletions]
         
-        String stopwordsList = "data/stopwords-utf8.txt";
 //        pipeList.add(new TokenSequenceRemoveStopwords(false, false));
+        String stopwordsList = "data/stopwords-utf8.txt";
         pipeList.add( new TokenSequenceRemoveStopwords(new File(stopwordsList), "UTF-8", false, false, false) );
 
         // Rather than storing tokens as strings, convert 
@@ -126,11 +126,14 @@ public class TopicModel extends Model {
 		}
 		
 		LinkedList<String> lines = FileOps.LoadFilebyLine("data/weibo_timeline.txt");
+		int lineCount = 0;
 		for (String string : lines) {
 			String content = string.substring(17, string.length());
 			String weiboId = string.substring(0, 17);
 			Instance instance = new Instance(content, 1, weiboId, null);
 			totalInstances.addThruPipe(instance);
+			if(lineCount++ > trainList.size())
+				break;
 		}
 		
 		model = new ParallelTopicModel(numTopics, 1.0, 0.01);
@@ -146,12 +149,13 @@ public class TopicModel extends Model {
 		}
 		
 		printTopic();
-//		Scanner scanner = new Scanner(System.in);
-//		scanner.next();
+		Scanner scanner = new Scanner(System.in);
+		scanner.nextLine();
 		String cmd = "-t 3 -h 0 -b 1";
 		classificationModel = new WinSVM("lib/winsvm/", cmd, "-b 1");
 		classificationModel.setNFeature(numTopics);
 		
+		System.out.println();
 		for(int i=0; i<instances.size(); i++ ) {
 			double[] topicDistribution = model.getTopicProbabilities(i);
 			
@@ -161,10 +165,13 @@ public class TopicModel extends Model {
 			int count = 0;
 			for (double d : topicDistribution) {
 				f.setValue(count++, d);
+				System.out.print(d+"\t");
 			}
 			classificationModel.addTrain(f);
+			System.out.println();
 		}
 		
+		scanner.nextLine();
 		classificationModel.train();
 	}
 	

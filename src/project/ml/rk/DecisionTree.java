@@ -1,5 +1,6 @@
 package project.ml.rk;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,9 @@ public class DecisionTree extends Model {
 
         // Remove stopwords from a standard English stoplist.
         //  options: [case sensitive] [mark deletions]
-        pipeList.add(new TokenSequenceRemoveStopwords(false, false));
+//        pipeList.add(new TokenSequenceRemoveStopwords(false, false));
+        String stopwordsList = "data/stopwords-utf8.txt";
+        pipeList.add( new TokenSequenceRemoveStopwords(new File(stopwordsList), "UTF-8", false, false, false) );
 
         // Rather than storing tokens as strings, convert 
         //  them to integers by looking them up in an alphabet.
@@ -89,14 +92,13 @@ public class DecisionTree extends Model {
 			Instance inst = new Instance(data.getContent(), -5, data.getWeiboId(), null);
 			testList.addThruPipe(inst);
 		}
-		System.out.println("Weibo ID\tBest Label");
 		ArrayList<Classification> classifications = classifier.classify(testList);
 		for (Classification classification : classifications) {
 //			System.out.println("CorrectLabel: "+classification.valueOfCorrectLabel());
 //			System.out.println("Labeling: "+classification.getLabeling());
 //			System.out.println("Label vector: "+classification.getLabelVector());
 			Labeling labeling = classification.getLabeling();
-			System.out.println(classification.getInstance().getName()+"\t"+labeling.getBestLabel());
+//			System.out.println(classification.getInstance().getName()+"\t"+labeling.getBestLabel());
 			Result result = new Result(classification.getInstance().getName().toString(), "Desition Tree", Integer.parseInt(labeling.getBestLabel().toString()), 0.0);
 			results.add(result);
 		}
@@ -109,11 +111,11 @@ public class DecisionTree extends Model {
 		Set<Data> dataSet = trainList.keySet();
 		for (Data data : dataSet) {
 			Label label = trainList.get(data);
-			System.out.println(data.getWeiboId()+"\t"+label.getIsreview()+"\t"+data.getContent());
+//			System.out.println(data.getWeiboId()+"\t"+label.getIsreview()+"\t"+data.getContent());
 			Instance instance = new Instance(data.getContent(), label.getIsreview(), data.getWeiboId(), null);
 			instances.addThruPipe(instance);
 		}
-		InstanceList[] splitList = instances.split(new double[] {0.7, 0.3});
+		InstanceList[] splitList = instances.split(new double[] {1.0, 0.0});
 		
 		decisionTree = new DecisionTreeTrainer();
 		classifier = decisionTree.train(splitList[0]);
