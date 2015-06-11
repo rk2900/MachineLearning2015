@@ -7,18 +7,11 @@ import basic.format.DenseFeature;
 import basic.format.Feature;
 import cc.mallet.types.*;
 import cc.mallet.pipe.*;
-import cc.mallet.pipe.iterator.*;
 import cc.mallet.topics.*;
 
 import java.util.*;
 import java.util.regex.*;
 import java.io.*;
-
-import libsvm.svm_node;
-import libsvm.svm_problem;
-
-import org.netlib.util.doubleW;
-import org.netlib.util.intW;
 
 import project.ml.hwy.Data;
 import project.ml.hwy.Label;
@@ -27,12 +20,16 @@ import project.ml.hwy.Result;
 
 public class TopicModel extends Model {
 	
-	int numTopics = 30;
 	public Pipe pipe;
 	public InstanceList instances;
 	public InstanceList totalInstances;
 	public ParallelTopicModel model;
 	public Classification classificationModel;
+	public double svmThresholdRatio = 0.27;
+	int numTopics = 50;
+	double auxilaryRatio = 0.4;
+	
+	int positiveDataNum=0, negativeDataNum=0;
 
     public Pipe buildPipe() {
         ArrayList pipeList = new ArrayList();
@@ -61,7 +58,7 @@ public class TopicModel extends Model {
         
 //        pipeList.add(new TokenSequenceRemoveStopwords(false, false));
         String stopwordsList = "data/stopwords-utf8.txt";
-        pipeList.add( new TokenSequenceRemoveStopwords(new File(stopwordsList), "UTF-8", false, false, false) );
+//        pipeList.add( new TokenSequenceRemoveStopwords(new File(stopwordsList), "UTF-8", false, false, false) );
 
         // Rather than storing tokens as strings, convert 
         //  them to integers by looking them up in an alphabet.
@@ -88,11 +85,13 @@ public class TopicModel extends Model {
 		LinkedList<Result> results =  new LinkedList<Result>();
 		TopicInferencer inferencer = model.getInferencer();
 		InstanceList test = new InstanceList(pipe);
+		
+		LinkedList<Feature> features = new LinkedList<Feature>();
 		for(int i=0; i<dataList.size(); i++) {
 			Data data = dataList.get(i);
 			Instance inst = new Instance(data.getContent(), 1, data.getWeiboId(), null);
 			test.addThruPipe(inst);
-			double[] topicProbabilities = inferencer.getSampledDistribution(test.get(i), 10, 1, 5);
+			double[] topicProbabilities = inferencer.getSampledDistribution(test.get(i), 100, 10, 10);
 			Feature f = new DenseFeature();
 			f.setSize(numTopics);
 			f.setResult(0);
@@ -100,26 +99,42 @@ public class TopicModel extends Model {
 			for (double d : topicProbabilities) {
 				f.setValue(count++, d);
 			}
-			Result result = new Result(data.getWeiboId(), "TopicModel", (int)classificationModel.predict(f), 0);
+			features.add(f);
+		}
+		
+		ArrayList<Double> labels = classificationModel.predict(features);
+		double max=0,min=1;
+		for (Double d : labels) {
+			max = d>max?d:max;
+			min = d<min?d:min;
+		}
+		
+		double threshold = min+(max-min)*svmThresholdRatio;
+		for(int iter=0; iter<dataList.size(); iter++) {
+			double ranking = labels.get(iter);
+			System.out.print(ranking+",");
+			Result result = new Result(dataList.get(iter).getWeiboId(), "TopicModel", ranking>threshold?1:-1, 0.0);
 			results.add(result);
 		}
 		
-		for (Result result : results) {
-			System.out.print(result.getType()+"\t");
-		}
 		return results;
 	}
 
 	@Override
 	protected void train(Map<Data, Label> trainList) {
+		trainList = normDataList(trainList, 0.0);
+		
 		Set<Data> dataSet = trainList.keySet();
 		LinkedList<Data> datas = new LinkedList<Data>();
 		LinkedList<Label> labels = new LinkedList<Label>();
 		
 		for (Data data : dataSet) {
 			Label label = trainList.get(data);
+			if(label.getIsreview()==0)
+				continue;
 			datas.add(data);
 			labels.add(label);
+			
 			Instance instance = new Instance(data.getContent(), label.getIsreview(), data.getWeiboId(), null);
 			instances.addThruPipe(instance);
 			totalInstances.add(instance);
@@ -128,12 +143,12 @@ public class TopicModel extends Model {
 		LinkedList<String> lines = FileOps.LoadFilebyLine("data/weibo_timeline.txt");
 		int lineCount = 0;
 		for (String string : lines) {
+			if(lineCount++ >= trainList.size()*auxilaryRatio)
+				break;
 			String content = string.substring(17, string.length());
 			String weiboId = string.substring(0, 17);
 			Instance instance = new Instance(content, 1, weiboId, null);
 			totalInstances.addThruPipe(instance);
-			if(lineCount++ > trainList.size())
-				break;
 		}
 		
 		model = new ParallelTopicModel(numTopics, 1.0, 0.01);
@@ -149,20 +164,23 @@ public class TopicModel extends Model {
 		}
 		
 		printTopic();
-		Scanner scanner = new Scanner(System.in);
-		scanner.nextLine();
-		String cmd = "-t 3 -h 0 -b 1";
+		
+		/* Classifier Part */
+		String cmd = "-t 0 -h 0 -b 1";
 		classificationModel = new WinSVM("lib/winsvm/", cmd, "-b 1");
+//		classificationModel = new LinearRegression(numTopics, instances.size(), 0.3, 0.0);
 		classificationModel.setNFeature(numTopics);
 		
 		System.out.println();
 		for(int i=0; i<instances.size(); i++ ) {
 			double[] topicDistribution = model.getTopicProbabilities(i);
-			
 			Feature f = new DenseFeature();
 			f.setSize(numTopics);
-			f.setResult(labels.get(i).getIsreview()); // 1, -1, 0
+			int isReview = labels.get(i).getIsreview();
+			int temp = isReview>0?positiveDataNum++:negativeDataNum++;
+			f.setResult(isReview); // 1, -1
 			int count = 0;
+			System.out.print(isReview+"\t");
 			for (double d : topicDistribution) {
 				f.setValue(count++, d);
 				System.out.print(d+"\t");
@@ -171,7 +189,6 @@ public class TopicModel extends Model {
 			System.out.println();
 		}
 		
-		scanner.nextLine();
 		classificationModel.train();
 	}
 	
@@ -193,5 +210,29 @@ public class TopicModel extends Model {
 			}
 			System.out.println(out);
 		}
+	}
+	
+	public Map<Data, Label> normDataList(Map<Data, Label> trainList, double ratio) {
+		Set<Data> dataSet = trainList.keySet();
+		int pNum=0, nNum=0;
+		Set<Data> keys = new HashSet<Data>();
+		for (Data d : dataSet) {
+			keys.add(d);
+			Label l = trainList.get(d);
+			int temp = l.getIsreview()>0?pNum++:nNum++;
+		}
+		int c=0;
+		int var = (int) ((pNum-nNum)*ratio);
+		for (Data d : keys) {
+			Label l = trainList.get(d);
+			if(l.getIsreview()*var > 0) {
+				trainList.remove(d);
+				c++;
+			}
+			if(c >= Math.abs(var))
+				break;
+		}
+		
+		return trainList;
 	}
 }

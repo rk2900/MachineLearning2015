@@ -2,6 +2,7 @@ package project.ml.rk;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +63,7 @@ public class DecisionTree extends Model {
         //  options: [case sensitive] [mark deletions]
 //        pipeList.add(new TokenSequenceRemoveStopwords(false, false));
         String stopwordsList = "data/stopwords-utf8.txt";
-        pipeList.add( new TokenSequenceRemoveStopwords(new File(stopwordsList), "UTF-8", false, false, false) );
+//        pipeList.add( new TokenSequenceRemoveStopwords(new File(stopwordsList), "UTF-8", false, false, false) );
 
         // Rather than storing tokens as strings, convert 
         //  them to integers by looking them up in an alphabet.
@@ -108,6 +109,10 @@ public class DecisionTree extends Model {
 
 	@Override
 	protected void train(Map<Data, Label> trainList) {
+		System.out.println(trainList.size());
+		trainList = normDataList(trainList, 0.0);
+		System.out.println(trainList.size());
+		
 		Set<Data> dataSet = trainList.keySet();
 		for (Data data : dataSet) {
 			Label label = trainList.get(data);
@@ -125,6 +130,28 @@ public class DecisionTree extends Model {
 		
 	}
 
-	
+	public Map<Data, Label> normDataList(Map<Data, Label> trainList, double ratio) {
+		Set<Data> dataSet = trainList.keySet();
+		int pNum=0, nNum=0;
+		Set<Data> keys = new HashSet<Data>();
+		for (Data d : dataSet) {
+			keys.add(d);
+			Label l = trainList.get(d);
+			int temp = l.getIsreview()>0?pNum++:nNum++;
+		}
+		int c=0;
+		int var = (int) ((pNum-nNum)*ratio);
+		for (Data d : keys) {
+			Label l = trainList.get(d);
+			if(l.getIsreview()*var > 0) {
+				trainList.remove(d);
+				c++;
+			}
+			if(c >= Math.abs(var))
+				break;
+		}
+		
+		return trainList;
+	}
 
 }

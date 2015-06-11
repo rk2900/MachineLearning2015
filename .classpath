@@ -16,6 +16,6 @@
 	<classpathentry kind="lib" path="lib/mallet/mtj-0.9.14.jar"/>
 	<classpathentry kind="lib" path="lib/mallet/netlib-java-0.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/mallet/trove4j-2.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/BasicOps.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BasicOps"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
