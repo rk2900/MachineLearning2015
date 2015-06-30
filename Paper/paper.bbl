@@ -1,0 +1,46 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem{agrawal1993mining}
+Agrawal, R., Imieli{\'n}ski, T., Swami, A.: Mining association rules between
+  sets of items in large databases. In: ACM SIGMOD Record. vol.~22, pp.
+  207--216. ACM (1993)
+
+\bibitem{blei2003latent}
+Blei, D.M., Ng, A.Y., Jordan, M.I.: Latent dirichlet allocation. the Journal of
+  machine Learning research  3,  993--1022 (2003)
+
+\bibitem{boser1992training}
+Boser, B.E., Guyon, I.M., Vapnik, V.N.: A training algorithm for optimal margin
+  classifiers. In: Proceedings of the fifth annual workshop on Computational
+  learning theory. pp. 144--152. ACM (1992)
+
+\bibitem{church1990word}
+Church, K.W., Hanks, P.: Word association norms, mutual information, and
+  lexicography. Computational linguistics  16(1),  22--29 (1990)
+
+\bibitem{dempster1977maximum}
+Dempster, A.P., Laird, N.M., Rubin, D.B.: Maximum likelihood from incomplete
+  data via the em algorithm. Journal of the royal statistical society. Series B
+  (methodological) pp. 1--38 (1977)
+
+\bibitem{koenigstein2011yahoo}
+Koenigstein, N., Dror, G., Koren, Y.: Yahoo! music recommendations: modeling
+  music ratings with temporal dynamics and item taxonomy. In: Proceedings of
+  the fifth ACM conference on Recommender systems. pp. 165--172. ACM (2011)
+
+\bibitem{quinlan2014c4}
+Quinlan, J.R.: C4. 5: programs for machine learning. Elsevier (2014)
+
+\bibitem{tsaparas2011selecting}
+Tsaparas, P., Ntoulas, A., Terzi, E.: Selecting a comprehensive set of reviews.
+  In: Proceedings of the 17th ACM SIGKDD international conference on Knowledge
+  discovery and data mining. pp. 168--176. ACM (2011)
+
+\bibitem{xu2007study}
+Xu, Y., Jones, G.J., Li, J., Wang, B., Sun, C.: A study on mutual
+  information-based feature selection for text categorization. Journal of
+  Computational Information Systems  3(3),  1007--1012 (2007)
+
+\end{thebibliography}

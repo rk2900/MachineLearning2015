@@ -1,0 +1,106 @@
+@inproceedings{bollacker2008freebase,
+  title={Freebase: a collaboratively created graph database for structuring human knowledge},
+  author={Bollacker, Kurt and Evans, Colin and Paritosh, Praveen and Sturge, Tim and Taylor, Jamie},
+  booktitle={Proceedings of the 2008 ACM SIGMOD international conference on Management of data},
+  pages={1247--1250},
+  year={2008},
+  organization={ACM}
+}
+
+@article{lehmann2014dbpedia,
+  title={DBpedia--A large-scale, multilingual knowledge base extracted from Wikipedia},
+  author={Lehmann, Jens and Isele, Robert and Jakob, Max and Jentzsch, Anja and Kontokostas, Dimitris and Mendes, Pablo N and Hellmann, Sebastian and Morsey, Mohamed and van Kleef, Patrick and Auer, S{\"o}ren and others},
+  journal={Semantic Web},
+  year={2014},
+  publisher={IOS Press}
+}
+
+@inproceedings{suchanek2007yago,
+  title={Yago: a core of semantic knowledge},
+  author={Suchanek, Fabian M and Kasneci, Gjergji and Weikum, Gerhard},
+  booktitle={Proceedings of the 16th international conference on World Wide Web},
+  pages={697--706},
+  year={2007},
+  organization={ACM}
+}
+
+@article{lopez2011question,
+  title={Is question answering fit for the semantic web?: a survey},
+  author={Lopez, Vanessa and Uren, Victoria and Sabou, Marta and Motta, Enrico},
+  journal={Semantic Web},
+  volume={2},
+  number={2},
+  pages={125--155},
+  year={2011},
+  publisher={IOS Press}
+}
+
+@article{lopez2012poweraqua,
+  title={Poweraqua: Supporting users in querying and exploring the semantic web},
+  author={Lopez, Vanessa and Fern{\'a}ndez, Miriam and Motta, Enrico and Stieler, Nico},
+  journal={Semantic Web},
+  volume={3},
+  number={3},
+  pages={249--265},
+  year={2012},
+  publisher={IOS Press}
+}
+
+@inproceedings{yahya2013robust,
+  title={Robust question answering over the web of linked data},
+  author={Yahya, Mohamed and Berberich, Klaus and Elbassuoni, Shady and Weikum, Gerhard},
+  booktitle={Proceedings of the 22nd ACM international conference on Conference on information \& knowledge management},
+  pages={1107--1116},
+  year={2013},
+  organization={ACM}
+}
+
+@article{hequestion,
+  title={Question Answering over Linked Data Using First-order Logic},
+  author={He, Shizhu and Liu, Kang and Zhang, Yuanzhe and Xu, Liheng and Zhao, Jun}
+}
+
+@inproceedings{unger2012template,
+  title={Template-based question answering over RDF data},
+  author={Unger, Christina and B{\"u}hmann, Lorenz and Lehmann, Jens and Ngonga Ngomo, Axel-Cyrille and Gerber, Daniel and Cimiano, Philipp},
+  booktitle={Proceedings of the 21st international conference on World Wide Web},
+  pages={639--648},
+  year={2012},
+  organization={ACM}
+}
+
+@inproceedings{zou2014natural,
+  title={Natural language question answering over rdf: a graph data driven approach},
+  author={Zou, Lei and Huang, Ruizhe and Wang, Haixun and Yu, Jeffer Xu and He, Wenqiang and Zhao, Dongyan},
+  booktitle={Proceedings of the 2014 ACM SIGMOD international conference on Management of data},
+  pages={313--324},
+  year={2014},
+  organization={ACM}
+}
+
+@inproceedings{han2013umbc,
+  title={UMBC EBIQUITY-CORE: Semantic textual similarity systems},
+  author={Han, Lushan and Kashyap, Abhay and Finin, Tim and Mayfield, James and Weese, Jonathan},
+  booktitle={Proceedings of the Second Joint Conference on Lexical and Computational Semantics},
+  volume={1},
+  pages={44--52},
+  year={2013}
+}
+
+@article{milne2013open,
+  title={An open-source toolkit for mining Wikipedia},
+  author={Milne, David and Witten, Ian H},
+  journal={Artificial Intelligence},
+  volume={194},
+  pages={222--239},
+  year={2013},
+  publisher={Elsevier}
+}
+
+@inproceedings{manning2014stanford,
+  title={The Stanford CoreNLP natural language processing toolkit},
+  author={Manning, Christopher D and Surdeanu, Mihai and Bauer, John and Finkel, Jenny and Bethard, Steven J and McClosky, David},
+  booktitle={Proceedings of 52nd Annual Meeting of the Association for Computational Linguistics: System Demonstrations},
+  pages={55--60},
+  year={2014}
+}
